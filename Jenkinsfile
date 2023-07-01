@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Trivy Scan Repo') {
             steps {
-                sh 'trivy scan .'
+                sh 'trivy fs .'
             }
         }
         
