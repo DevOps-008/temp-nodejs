@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh 'trivy image 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1 --severity CRITICAL'
                 sh '''
-                trivy -q image --exit-code 1 --severity CRITICAL 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1"
+                trivy -q image --exit-code 1 --severity CRITICAL 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1
                   if [ $? -ne 0 ]; then
                         echo "Critical vulnerabilities found. Aborting the build."
                         return
