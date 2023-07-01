@@ -22,13 +22,18 @@ pipeline {
         
         stage('Docker Image Push') {
             steps {
-                sh 'docker push 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1 '
+                sh 'docker push 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1'
             }
         }
         
         stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1'
+                sh 'trivy image 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1 --severity CRITICAL'
+                  trivy -q image --exit-code 1 --severity CRITICAL "${image}"
+                  if [ $? -ne 0 ]; then
+                        echo "Critical vulnerabilities found. Aborting the build."
+                        return
+                  fi
             }
         }
     }
