@@ -2,20 +2,33 @@ pipeline {
     agent any
     
     stages {
-        stage('Build') {
+        stage('Trivy Scan Repo') {
             steps {
-                // Add your build steps here
-                sh 'pwd'
-                sh 'ls'
-                sh 'whoami'
-                sh 'echo "Building..."'
+                sh 'trivy scan .'
             }
         }
         
-        stage('Test') {
+        stage('AWS ECR Login') {
             steps {
-                // Add your test steps here
-                sh 'echo "Testing..."'
+                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 970355526286.dkr.ecr.us-east-1.amazonaws.com'
+            }
+        }
+        
+        stage('Docker Image Build') {
+            steps {
+                sh 'docker build -t 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1 .'
+            }
+        }
+        
+        stage('Docker Image Push') {
+            steps {
+                sh 'docker push 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1 '
+            }
+        }
+        
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image 970355526286.dkr.ecr.us-east-1.amazonaws.com/nodejs:v1'
             }
         }
     }
